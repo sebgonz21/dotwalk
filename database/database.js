@@ -4,8 +4,6 @@ const mongoose = require('mongoose');
 const database = "mongoosedb";
 let db;
 
-d
-
 module.exports = {
 
     connect:()=>{
