@@ -3,10 +3,10 @@
  * Load Schemas
  * Updates Schemas 
  */
-
-const ShemaModel = require('../models/SchemaModel.js');
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const ShemaModel = require('../models/SchemaModel.js');
+
 
 let handler = {};
 
@@ -41,7 +41,14 @@ handler.checkSchemasCollection = (db)=>{
  */
 handler.createSchemasCollection = ()=>{
     return new Promise((resolve, reject) => {
-        let schemas = new ShemaModel();
+        const structure = {
+            structure:{
+                created_on:Date,
+                updated_on:Date
+            },
+            collection_name:"Object"
+        };
+        let schemas = new ShemaModel(structure);
         resolve(schemas.save());    
     });        
 };
