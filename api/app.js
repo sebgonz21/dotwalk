@@ -31,6 +31,11 @@ app.use((req, res, next)=> {
     next();
 });
 
+
+app.get('/api',(req,res)=>{
+    res.send("API is working");
+});
+
 /** ROUTES */
 app.use('/api/tables',tableRoutes);
 app.use('/api/data',dataRoutes);
