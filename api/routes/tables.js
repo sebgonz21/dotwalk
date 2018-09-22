@@ -27,7 +27,7 @@ router.get('/',(req,res,next)=>{
 
 router.post('/',(req,res,next)=>{
 
-    schemaHandler.createNewSchema(req.body.table_name,req.body.collumns)
+    schemaHandler.createNewSchema(req.body.table_name,req.body.columns)
     .then(result =>{
         console.log(result);
         res.status(201).json({
