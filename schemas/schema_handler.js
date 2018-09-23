@@ -6,7 +6,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const ShemaModel = require('../models/SchemaModel.js');
-
+const baseTable = require('../models/Record.js');
 
 let handler = {};
 
@@ -37,19 +37,26 @@ handler.checkSchemasCollection = (db)=>{
 
 /**
  * Creates Schemas collection
- * from SchemaModel.js
+ * from SchemaModel.js by inserting base table Record
  */
 handler.createSchemasCollection = ()=>{
     return new Promise((resolve, reject) => {
-        const structure = {
+        const schemaStructure = {
+            collection_name:"_Record",
             structure:{
-                created_on:Date,
-                updated_on:Date
-            },
-            collection_name:"Object"
+                created_on:"Date",
+                updated_on:"Date"
+            }            
         };
-        let schemas = new ShemaModel(structure);
-        resolve(schemas.save());    
+        let schemas = new ShemaModel(schemaStructure);
+        schemas.save()
+        .then(result =>{
+            resolve(result);    
+        })
+        .catch(err =>{
+            reject(err);
+        });
+        
     });        
 };
 
@@ -61,7 +68,7 @@ handler.createSchemasCollection = ()=>{
 handler.loadSchemas = ()=>{       
 
     return new Promise((resolve, reject) => {
-        ShemaModel.find()
+        ShemaModel.find({ collection_name: { $ne: "_Record" } })
         .exec()
         .then(schemas =>{
 
@@ -96,29 +103,23 @@ handler.createNewSchema = (name,structure)=>{
         //create collection for data
         const newSchemaData = new Schema(structure,{collection:name});
         const newSchemaModel = mongoose.model(name,newSchemaData);     
-        const newSchemaInstance = new newSchemaModel();
-        newSchemaInstance.save()           
-        .then(schemaDataResult =>{
-                //create schema definition
-            const newSchema = new ShemaModel({
-                collection_name:name,
-                structure: structure
-            });
         
-            newSchema.save()
-            .then(schemaDefResult => {
-                
-                resolve(schemaDataResult);
-            })
-            .catch(err => {
-                reject(err);
-            });  
-            
+        const newSchema = new ShemaModel({
+            collection_name:name,
+            structure: structure
+        });
+    
+        newSchema.save()
+        .then(schemaDefResult => {
+            handler.SchemaInstances[schemaDefResult._id] = {
+                schema:newSchemaModel,
+                model:newSchemaModel
+            };  
+            resolve(schemaDefResult);
         })
-        .catch(err =>{
-            reject(err)
-        });                                     
-        
+        .catch(err => {            
+            reject(err);
+        });          
     });
 };
 

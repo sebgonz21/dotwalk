@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const structure = {
-    structure:Object,
+    structure: Schema.Types.Mixed,
     collection_name:{
         type:String,
         required:true

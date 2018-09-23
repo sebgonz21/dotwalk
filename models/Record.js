@@ -10,7 +10,6 @@ const structure = {
     updated_on:Date
 };
 
-let schema = new Schema(structure,{collection:"Object"});
-console.log(schema);
+let schema = new Schema(structure,{collection:"_Record"});
 
-module.exports = mongoose.model("Object",schema);
+module.exports = mongoose.model("_Record",schema);
