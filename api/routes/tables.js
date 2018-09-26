@@ -104,11 +104,36 @@ router.patch('/:table_name',(req,res,next)=>{
 
 
 /**
- * Delete column
+ * Delete table or column
  */
+router.delete('/:table_name', (req,res,next)=>{
+    const table_name = req.params.table_name;
+    const columns = req.body.columns;
+   
+    if(columns){
+        //delete columns
+        for(var i = 0; i < columns.length; i++){
+           
+            schemaHandler.removeSchemaElement(table_name,columns[i])
+            .then(result =>{
+                //console.log(result);
+            })
+            .catch(err =>{
+                console.log(err);
+                res.status(500).json({
+                    error: err
+                });
+            });            
+            
+        }
+        
+    }else{
+        //delete table
 
+    }
+    
+    
+});
 
- /**
-  * Delete table
-  */
+ 
 module.exports = router;

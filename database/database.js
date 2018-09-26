@@ -42,9 +42,9 @@ module.exports = {
                     return;
                 };
                 resolve(res);
-            });    
+            });   
+             
         });        
-    },
-
+    }
 }
 

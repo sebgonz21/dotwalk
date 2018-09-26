@@ -5,7 +5,7 @@
  */
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const ShemaModel = require('../models/SchemaModel.js');
+const SchemaModel = require('../models/SchemaModel.js');
 const baseTableModel = require('../models/Record.js');
 
 const baseColumns = {
@@ -47,7 +47,7 @@ handler.createSchemasCollection = ()=>{
             collection_name:"_Record",
             structure:baseColumns
         };
-        let schemas = new ShemaModel(schemaStructure);
+        let schemas = new SchemaModel(schemaStructure);
         schemas.save()
         .then(result =>{
             resolve(result);    
@@ -67,7 +67,7 @@ handler.createSchemasCollection = ()=>{
 handler.loadSchemas = ()=>{       
 
     return new Promise((resolve, reject) => {
-        ShemaModel.find({ collection_name: { $ne: "_Record" } })
+        SchemaModel.find({ collection_name: { $ne: "_Record" } })
         .exec()
         .then(schemas =>{
 
@@ -104,7 +104,7 @@ handler.createNewSchema = (table_name,structure)=>{
         structure =  Object.assign(structure,baseColumns);
 
         //Create new Schema record
-        const newSchema = new ShemaModel({
+        const newSchema = new SchemaModel({
             collection_name:table_name,
             structure: structure
         });
@@ -138,13 +138,13 @@ handler.addSchemaElement = (table_name,columns)=>{
                       
 
         //Update Schema Definition
-        ShemaModel.findOne({"collection_name":table_name}, function(err, doc){
+        SchemaModel.findOne({"collection_name":table_name}, function(err, doc){
             
             let newStructure = doc.structure;
             for(let col in columns){
                 newStructure[col] = columns[col];
             }
-            ShemaModel.updateOne(
+            SchemaModel.updateOne(
                 {"_id":doc._id},
                 { $set : { structure : newStructure}},
                 function(err,result){
@@ -160,5 +160,52 @@ handler.addSchemaElement = (table_name,columns)=>{
     
 }
 
+/**
+ * Remove column from table.
+ * - removes key from mongoose Schema Object and recompiles model
+ * - removes key from Schema deifinition record for Schema
+ * - removes key from existing documents in collection
+ * 
+ * @param table_name name of table from which to remove column
+ * @param column_name name of column to remove
+ */
+handler.removeSchemaElement = (table_name,column_name)=>{
+    return new Promise((resolve, reject) => {
+       
+        if(mongoose.models[table_name]){
+            console.log("deleting");
+            //Remove from key from table
+            const editSchemaModel = mongoose.models[table_name];
+
+            let unsetColumn = {};
+            unsetColumn[column_name] = ""; 
+
+            editSchemaModel.collection.updateMany({},{$unset:unsetColumn});
+
+            //@TODO FINISH THIS
+
+
+
+
+            //Remove key from Schema object in mongoose
+            //const editSchema = editSchemaModel.schema;
+           // editSchema.remove(column_name);           
+           // mongoose.model(table_name,editSchema);
+
+            //Remove key from Schema Definition table record
+            SchemaModel.findOne({collection_name:table_name},function(err,schemaDefinition){
+                if(err){
+                    reject(err);
+                    return;
+                }
+
+                //console.log(schemaDefinition);
+            });
+           
+            //SchemaModel.collection.update({collection_name:table_name},$unset);
+        }
+       
+    });
+};
 
 module.exports = handler;
