@@ -6,14 +6,16 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const ShemaModel = require('../models/SchemaModel.js');
-const baseTable = require('../models/Record.js');
+const baseTableModel = require('../models/Record.js');
+
+const baseColumns = {
+    _created_on:"Date",
+    _updated_on:"Date",
+    _created_by:"String",
+    _updated_by:"String"
+};
 
 let handler = {};
-
-/**
- * Map of Schema Instances
- */
-handler.SchemaInstances = {};
 
 /**
  * Checks if Schemas Collection
@@ -43,10 +45,7 @@ handler.createSchemasCollection = ()=>{
     return new Promise((resolve, reject) => {
         const schemaStructure = {
             collection_name:"_Record",
-            structure:{
-                created_on:"Date",
-                updated_on:"Date"
-            }            
+            structure:baseColumns
         };
         let schemas = new ShemaModel(schemaStructure);
         schemas.save()
@@ -76,13 +75,11 @@ handler.loadSchemas = ()=>{
                 sch = schemas[i];
                 
                 const loadedSchema = new Schema(sch.structure,{collection:sch.collection_name});
-                const loadedSchemaModel = mongoose.model(sch.collection_name,loadedSchema);     
-                
-                handler.SchemaInstances[sch._id] = {model:loadedSchemaModel,schema:loadedSchema};
+                mongoose.model(sch.collection_name,loadedSchema);     
                 
             }
             
-            resolve(handler.SchemaInstances);
+            resolve(true);
         })
         .catch(err => {
             console.log(err);
@@ -97,24 +94,23 @@ handler.loadSchemas = ()=>{
  * @param name Name of new Schema
  * @param structure structure of new Schema (columns)
  */
-handler.createNewSchema = (name,structure)=>{
+handler.createNewSchema = (table_name,structure)=>{
     return new Promise((resolve, reject) => {
         
-        //create collection for data
-        const newSchemaData = new Schema(structure,{collection:name});
-        const newSchemaModel = mongoose.model(name,newSchemaData);     
+        //create Schema and Model in Mongoose through inheritance
+        baseTableModel.discriminator(table_name,new Schema(structure,{collection:table_name}));
         
+        //Get new structure with inherited columns
+        structure =  Object.assign(structure,baseColumns);
+
+        //Create new Schema record
         const newSchema = new ShemaModel({
-            collection_name:name,
+            collection_name:table_name,
             structure: structure
         });
     
         newSchema.save()
         .then(schemaDefResult => {
-            handler.SchemaInstances[schemaDefResult._id] = {
-                schema:newSchemaModel,
-                model:newSchemaModel
-            };  
             resolve(schemaDefResult);
         })
         .catch(err => {            
@@ -129,27 +125,27 @@ handler.createNewSchema = (name,structure)=>{
  * @param schemaId Object ID for Schema
  * @param columns new columns to add to schema
  */
-handler.addSchemaElement = (schemaId,columns)=>{
+handler.addSchemaElement = (table_name,columns)=>{
     return new Promise((resolve, reject) => {                        
         
         //Edit mongoose Schema
-        let editSchema = handler.SchemaInstances[schemaId].schema;                  
-        editSchema.add(columns);           
-
-        //Update Array of mongoose Schemas
-        handler.SchemaInstances[schemaId].schema = editSchema;
-        let newModel = mongoose.model(handler.SchemaInstances[schemaId].model.modelName,editSchema);
-        handler.SchemaInstances[schemaId].model = newModel;                    
+        //Recompile model
+        if(mongoose.models[table_name]){
+            let editSchema = mongoose.models[table_name].schema
+            editSchema.add(columns);           
+            mongoose.model(table_name,editSchema);
+        }
+                      
 
         //Update Schema Definition
-        ShemaModel.findOne({"_id":schemaId}, function(err, doc){
+        ShemaModel.findOne({"collection_name":table_name}, function(err, doc){
             
             let newStructure = doc.structure;
             for(let col in columns){
                 newStructure[col] = columns[col];
             }
-            ShemaModel.update(
-                {"_id":schemaId},
+            ShemaModel.updateOne(
+                {"_id":doc._id},
                 { $set : { structure : newStructure}},
                 function(err,result){
                     if(err) reject(err)

@@ -7,6 +7,8 @@ const router = express.Router();
 const ShemaModel = require('../../models/SchemaModel.js');
 const schemaHandler = require('../../schemas/schema_handler.js');
 const database = require("../../database/database.js");
+
+
 /**
  * Get all tables
  */
@@ -19,7 +21,16 @@ router.get('/',(req,res,next)=>{
         //@TODO Loop through schemas put into new
         //object and make collection_name, table name and structure and columns
 
-        res.status(200).json(schemas);
+        let tables = [];
+        for(var i = 0; i < schemas.length; i++){
+            tables.push({
+                _id:schemas[i]._id,
+                table_name:schemas[i].collection_name,
+                columns:schemas[i].structure
+            });
+        }
+
+        res.status(200).json(tables);
     })
     .catch(err => {
         console.log(err);
@@ -30,6 +41,10 @@ router.get('/',(req,res,next)=>{
 
 });
 
+
+/**
+ * Create Table
+ */
 router.post('/',(req,res,next)=>{
 
     schemaHandler.createNewSchema(req.body.table_name,req.body.columns)
@@ -37,11 +52,11 @@ router.post('/',(req,res,next)=>{
        
         database.createCollection(schemaResult.collection_name)
         .then(collectionResult=>{
-            console.log(collectionResult);
+           
             res.status(201).json({
                 message: "Created table successfully",
                 table: {
-                    name:schemaResult.collection_name,
+                    table_name:schemaResult.collection_name,
                     _id: schemaResult._id,
                     columns:schemaResult.structure
                 }
@@ -69,11 +84,14 @@ router.post('/',(req,res,next)=>{
 
 });
 
-router.patch('/:tableid',(req,res,next)=>{
-    const id = req.params.tableid;
+/**
+ * Add column to table
+ */
+router.patch('/:table_name',(req,res,next)=>{
+    const table_name = req.params.table_name;
     const columns = req.body.columns;
     
-    schemaHandler.addSchemaElement(id,columns)
+    schemaHandler.addSchemaElement(table_name,columns)
     .then((result)=>{
         res.status(201).json(result);
     }).catch(err=>{
@@ -84,4 +102,13 @@ router.patch('/:tableid',(req,res,next)=>{
     });
 });
 
+
+/**
+ * Delete column
+ */
+
+
+ /**
+  * Delete table
+  */
 module.exports = router;

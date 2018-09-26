@@ -5,16 +5,14 @@
 const express = require('express');
 const router = express.Router();
 const schemaHandler = require('../../schemas/schema_handler.js');
+const mongoose = require('mongoose');
 
-router.get('/:tableid',(req,res,next)=>{
+router.get('/:table_name',(req,res,next)=>{
 
-    const id = req.params.tableid;
-    const schemasInstances = schemaHandler.SchemaInstances;
-    const schemaInstance = schemasInstances[id];
+    const table_name = req.params.table_name;
     
-    
-    if(schemaInstance){
-        const model = schemaInstance.model;
+    if(mongoose.models[table_name]){
+        const model = mongoose.models[table_name];
         if(model){
             model.find({})
             .exec()
@@ -36,19 +34,28 @@ router.get('/:tableid',(req,res,next)=>{
 
 });
 
-router.post('/:tableid',(req,res,next)=>{
+router.post('/:table_name',(req,res,next)=>{
 
     
-    const id = req.params.tableid;
+    const table_name = req.params.table_name;
     const data = req.body.data;
-    const schemasInstances = schemaHandler.SchemaInstances;
-    const schemaInstance = schemasInstances[id];
     
-    if(schemaInstance){
-        const model = schemaInstance.model;
+    if(mongoose.models[table_name]){
+        const model = mongoose.models[table_name];
+        console.log(model);
+        console.log(model.schema);
         if(model){
             const newDocument = new model(data);
-            res.status(201).json(newDocument.save());
+            newDocument.save()
+            .then(result =>{
+                res.status(201).json(result);
+            })
+            .catch(err =>{
+                res.status(500).json({
+                    error:err
+                });
+            });
+            
         }
     }
 

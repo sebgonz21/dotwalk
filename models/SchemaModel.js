@@ -9,7 +9,8 @@ const structure = {
     structure: Schema.Types.Mixed,
     collection_name:{
         type:String,
-        required:true
+        required:true,
+        unique:true
     }
 };
 
