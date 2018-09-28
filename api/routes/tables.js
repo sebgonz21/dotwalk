@@ -65,7 +65,7 @@ router.post('/',(req,res,next)=>{
         }).catch(err =>{
             console.log(err);
             res.status(500).json({
-                error: err
+                error: err.message
             });
         });
         
@@ -78,7 +78,7 @@ router.post('/',(req,res,next)=>{
             };
         }
         res.status(500).json({
-            error: err
+            error: err.message
         });
     });    
 
@@ -109,30 +109,40 @@ router.patch('/:table_name',(req,res,next)=>{
 router.delete('/:table_name', (req,res,next)=>{
     const table_name = req.params.table_name;
     const columns = req.body.columns;
-   
-    if(columns){
-        //delete columns
-        for(var i = 0; i < columns.length; i++){
-           
-            schemaHandler.removeSchemaElement(table_name,columns[i])
-            .then(result =>{
-                //console.log(result);
-            })
-            .catch(err =>{
-                console.log(err);
-                res.status(500).json({
-                    error: err
-                });
-            });            
+    if(table_name){
+        if(columns){
+            //delete columns
+            for(var i = 0; i < columns.length; i++){
+               
+                schemaHandler.removeSchemaElement(table_name,columns[i])
+                .then(result =>{
+                    //console.log(result);
+                    if(result && i === columns.length -1){
+                        res.status(200).json({
+                            columns:columns,
+                            result:"Columns deleted"
+                        });
+                    }
+                })
+                .catch(err =>{
+                    console.log(err);
+                    res.status(500).json({
+                        error: err.message
+                    });
+                });            
+                
+            }
+            
+        }else{
+            //delete table
             
         }
-        
     }else{
-        //delete table
-
+        res.status(400).json({
+            error: "No table name provided"
+        });
     }
-    
-    
+            
 });
 
  

@@ -153,7 +153,7 @@ handler.addSchemaElement = (table_name,columns)=>{
                 }
             );
             
-            });
+        });
         
         
     });
@@ -173,39 +173,45 @@ handler.removeSchemaElement = (table_name,column_name)=>{
     return new Promise((resolve, reject) => {
        
         if(mongoose.models[table_name]){
-            console.log("deleting");
-            //Remove from key from table
-            const editSchemaModel = mongoose.models[table_name];
+            try{
+                console.log("deleting");
+                //Remove from key from table
+                const editSchemaModel = mongoose.models[table_name];
 
-            let unsetColumn = {};
-            unsetColumn[column_name] = ""; 
+                let unsetColumn = {};
+                unsetColumn[column_name] = ""; 
 
-            editSchemaModel.collection.updateMany({},{$unset:unsetColumn});
+                editSchemaModel.collection.updateMany({},{$unset:unsetColumn});
 
-            //@TODO FINISH THIS
+                //Remove key from Schema object in mongoose
+                const editSchema = editSchemaModel.schema;
+                editSchema.remove(column_name);           
+                mongoose.model(table_name,editSchema);
 
-
-
-
-            //Remove key from Schema object in mongoose
-            //const editSchema = editSchemaModel.schema;
-           // editSchema.remove(column_name);           
-           // mongoose.model(table_name,editSchema);
-
-            //Remove key from Schema Definition table record
-            SchemaModel.findOne({collection_name:table_name},function(err,schemaDefinition){
-                if(err){
-                    reject(err);
-                    return;
-                }
-
-                //console.log(schemaDefinition);
-            });
-           
-            //SchemaModel.collection.update({collection_name:table_name},$unset);
+                //Remove key from Schema Definition table record
+                const unsetColumnDotWalk  = "structure."+column_name;
+                let schemaDefUnsetColumn = {};
+                schemaDefUnsetColumn[unsetColumnDotWalk] = "";
+                SchemaModel.collection.updateOne({collection_name:table_name},{$unset:schemaDefUnsetColumn});
+                
+                resolve(true);
+            }catch(err){
+                reject(false);
+            }
+            return;            
         }
+        reject(false);
        
     });
+};
+
+/**
+ * Remove table.
+ * 
+ * @param table_name name of table to remove
+ */
+handler.removeSchema = (table_name)=>{
+
 };
 
 module.exports = handler;
