@@ -7,7 +7,7 @@ const router = express.Router();
 const ShemaModel = require('../../models/SchemaModel.js');
 const schemaHandler = require('../../schemas/schema_handler.js');
 const database = require("../../database/database.js");
-
+const mongoose = require('mongoose');
 
 /**
  * Get all tables
@@ -84,6 +84,29 @@ router.post('/',(req,res,next)=>{
         });
     });    
 
+});
+
+/**
+ * Get Table data
+ */
+router.get('/:table_name',(req,res,next)=>{
+    const table_name = req.params.table_name;
+
+    if(mongoose.models[table_name]){
+        const model = mongoose.models[table_name];
+        model.count()
+        .then(result =>{
+            res.status(200).json({
+                count:result
+            });
+        })
+        .catch(err =>{
+            console.log(err);
+            res.status(500).json({
+                error: err
+            });
+        });
+    }
 });
 
 /**
