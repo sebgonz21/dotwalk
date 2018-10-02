@@ -207,11 +207,34 @@ handler.removeSchemaElement = (table_name,column_name)=>{
 
 /**
  * Remove table.
- * 
+ * - removes collection
+ * - removes Schema deifinition record for Schema
+ * - removes mongoose Schema Object
  * @param table_name name of table to remove
  */
 handler.removeSchema = (table_name)=>{
+    return new Promise((resolve, reject) => {
+        if(mongoose.models[table_name]){
+            
+            const model = mongoose.models[table_name];
+            model.collection.drop()
+            .then(result =>{
+                console.log(result);
+                SchemaModel.remove({collection_name:table_name}, function(err){
+                    if(err){
+                        console.log(err);
+                        reject(false);
+                    }else{
+                        resolve(true);
+                    }
+                });
 
+            }).catch(err =>{
+                console.log(err);
+                reject(false);
+            });
+        }
+    });
 };
 
 module.exports = handler;

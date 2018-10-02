@@ -47,6 +47,7 @@ router.get('/',(req,res,next)=>{
  */
 router.post('/',(req,res,next)=>{
 
+    console.log(req.body);
     schemaHandler.createNewSchema(req.body.table_name,req.body.columns)
     .then(schemaResult =>{
        
@@ -65,7 +66,8 @@ router.post('/',(req,res,next)=>{
         }).catch(err =>{
             console.log(err);
             res.status(500).json({
-                error: err.message
+                //error: err.message
+                error:"Failed To create table " + err.message
             });
         });
         
@@ -78,7 +80,7 @@ router.post('/',(req,res,next)=>{
             };
         }
         res.status(500).json({
-            error: err.message
+            error:"Failed To create table " + err.message
         });
     });    
 
@@ -119,6 +121,7 @@ router.delete('/:table_name', (req,res,next)=>{
                     //console.log(result);
                     if(result && i === columns.length -1){
                         res.status(200).json({
+                            table_name:table_name,
                             columns:columns,
                             result:"Columns deleted"
                         });
@@ -135,7 +138,21 @@ router.delete('/:table_name', (req,res,next)=>{
             
         }else{
             //delete table
-            
+            console.log("deleting table");
+            schemaHandler.removeSchema(table_name)
+            .then(result =>{
+                console.log(result);
+                res.status(200).json({
+                    table_name:table_name,
+                    result:"Table deleted"
+                });
+            })
+            .catch(err=>{
+                console.log(err);
+                res.status(500).json({
+                    error: err.message
+                });
+            });
         }
     }else{
         res.status(400).json({
