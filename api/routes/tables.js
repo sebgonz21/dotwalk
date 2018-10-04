@@ -9,6 +9,23 @@ const schemaHandler = require('../../schemas/schema_handler.js');
 const database = require("../../database/database.js");
 const mongoose = require('mongoose');
 
+
+const getRecordCount = (table_name)=>{
+    return new Promise((resolve, reject) => {
+        if(mongoose.models[table_name]){
+            const model = mongoose.models[table_name];
+            model.count()
+            .then(result =>{
+                resolve(result);
+            })
+            .catch(err =>{
+                console.log(err);
+                reject(err);
+            });
+        }
+    });
+};
+
 /**
  * Get all tables
  */
@@ -18,10 +35,19 @@ router.get('/',(req,res,next)=>{
     .exec()
     .then(schemas =>{
 
-        //@TODO Loop through schemas put into new
-        //object and make collection_name, table name and structure and columns
-
         let tables = [];
+
+        getRecordCount(table_name)
+        .then(result =>{
+            table_data.record_count = result;
+            res.status(200).json(table_data);
+        })
+        .catch(err =>{
+            console.log(err);
+            res.status(500).json({
+                error: err
+            });
+        });
         for(var i = 0; i < schemas.length; i++){
             tables.push({
                 _id:schemas[i]._id,
@@ -92,21 +118,21 @@ router.post('/',(req,res,next)=>{
 router.get('/:table_name',(req,res,next)=>{
     const table_name = req.params.table_name;
 
-    if(mongoose.models[table_name]){
-        const model = mongoose.models[table_name];
-        model.count()
-        .then(result =>{
-            res.status(200).json({
-                count:result
-            });
-        })
-        .catch(err =>{
-            console.log(err);
-            res.status(500).json({
-                error: err
-            });
+
+    let table_data = {};
+
+    getRecordCount(table_name)
+    .then(result =>{
+        table_data.record_count = result;
+        res.status(200).json(table_data);
+    })
+    .catch(err =>{
+        console.log(err);
+        res.status(500).json({
+            error: err
         });
-    }
+    });
+
 });
 
 /**
