@@ -9,7 +9,11 @@ const schemaHandler = require('../../schemas/schema_handler.js');
 const database = require("../../database/database.js");
 const mongoose = require('mongoose');
 
-
+/**
+ * Gets the total record count of table.
+ * @todo should move this function somewhere else.
+ * @param {Object} table Table object containing name and other table details 
+ */
 const getRecordCount = (table)=>{
     return new Promise((resolve, reject) => {
         if(mongoose.models[table.table_name]){
