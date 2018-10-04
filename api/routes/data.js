@@ -48,8 +48,7 @@ router.post('/:table_name',(req,res,next)=>{
     
     if(mongoose.models[table_name]){
         const model = mongoose.models[table_name];
-        console.log(model);
-        console.log(model.schema);
+        
         if(model){
             const newDocument = new model(data);
             newDocument.save()

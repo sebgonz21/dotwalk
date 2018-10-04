@@ -10,13 +10,14 @@ const database = require("../../database/database.js");
 const mongoose = require('mongoose');
 
 
-const getRecordCount = (table_name)=>{
+const getRecordCount = (table)=>{
     return new Promise((resolve, reject) => {
-        if(mongoose.models[table_name]){
-            const model = mongoose.models[table_name];
-            model.count()
+        if(mongoose.models[table.table_name]){
+            const model = mongoose.models[table.table_name];
+            model.countDocuments()
             .then(result =>{
-                resolve(result);
+                table.record_count = result;
+                resolve(table);
             })
             .catch(err =>{
                 console.log(err);
@@ -36,27 +37,30 @@ router.get('/',(req,res,next)=>{
     .then(schemas =>{
 
         let tables = [];
+        let promises = [];
+        for(let i = 0; i < schemas.length; i++){
+        
+            let table = {
+                _id:schemas[i]._id,
+                table_name:schemas[i].collection_name,
+                columns:schemas[i].structure
+            };
+            
+            promises.push(getRecordCount(table));
+        }
 
-        getRecordCount(table_name)
-        .then(result =>{
-            table_data.record_count = result;
-            res.status(200).json(table_data);
+        Promise.all(promises)
+        .then(result=>{
+            tables = result;
+            res.status(200).json(tables);
         })
-        .catch(err =>{
+        .catch(err=>{
             console.log(err);
             res.status(500).json({
                 error: err
             });
         });
-        for(var i = 0; i < schemas.length; i++){
-            tables.push({
-                _id:schemas[i]._id,
-                table_name:schemas[i].collection_name,
-                columns:schemas[i].structure
-            });
-        }
 
-        res.status(200).json(tables);
     })
     .catch(err => {
         console.log(err);
