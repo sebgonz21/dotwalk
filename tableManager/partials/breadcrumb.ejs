@@ -1,0 +1,8 @@
+<nav aria-label="breadcrumb">
+<ol class="breadcrumb">
+<li class="breadcrumb-item"><a href="/">Home</a></li>
+<% for(var i=0; i<crumbs.length; i++) {%>
+        <li class="breadcrumb-item active" aria-current="page"><a href="../<%=crumbs[i]%>"><%=crumbs[i]%></a></li>
+        <% } %>
+</ol>
+</nav>
