@@ -1,0 +1,30 @@
+<div class="main-sub-nav d-flex align-items-center justify-content-end">
+<span class="pl-3 mr-auto">{{ routeLabel }}</span> 
+<button class="btn btn-success mr-5">Add Columns</button>
+</div>
+<div class="subnav-spacer"></div>
+<div class="container mt-3">
+<h2 class="text-center">Records</h2>
+        <h3>{{ table_name }} <span ng-show="records.length"><h6>{{records.length}} <span ng-show="records.length==1">record</span><span ng-show="records.length>1">records</span></h6></span></h3>
+        <hr/>
+        <table class="table text-center mt-3">
+            <thead>
+                <tr>
+                <th scope="col">id</th>
+                <th scope="col">Created</th>
+                <th scope="col">Updated</th>
+                <th scope="col">Delete</th>
+                <th scope="col">View</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="record in records track by $index">
+                <td>{{ record.id }}</td>
+                <td></td>
+                <td></td>
+                <td><button class="btn btn-outline-danger">Delete</button></td>
+                <td><a href="#!viewRecords?id={{ table.id }}&amp;table_name={{ table.name }}" class="btn btn-outline-primary">Go</a></td>
+                </tr>
+            </tbody>
+            </table>
+</div>

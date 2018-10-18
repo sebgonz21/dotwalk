@@ -1,0 +1,133 @@
+html,
+body {
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    background: #fafafa;
+    font-family: 'Muli', sans-serif;
+}
+
+/****nav***/
+
+.main-nav {
+    width: 100%;
+    height: 80px;
+    box-shadow: 0 0 2px 1px rgba(0, 0, 0, .30);
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 2000;
+    background: #ffffff;
+}
+
+.main-nav-links {
+    padding-right: 30px;
+}
+
+.main-nav-links a {
+    padding: 0 20px;
+    font-size: 1.5em;
+    color: #212121;
+    text-decoration: none;
+}
+
+/****nav***/
+
+/****sidenav****/
+
+.side-nav {
+    width: 250px;
+    background: #212121;
+    border-right: thin solid rgba(0, 0, 0, .10);
+    height: 100%;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 1002;
+}
+
+.side-nav ul {
+    margin-top: 120px;
+    padding-left: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    text-align: left;
+}
+
+.side-nav ul li {
+    border-bottom: 1px solid rgba(0, 0, 0, .30);
+}
+
+.side-nav ul li:nth-child(1) {
+    border-top: 1px solid rgba(0, 0, 0, .30);
+}
+
+.side-nav ul li a {
+    display: flex;
+    align-items: center;
+    height: 50px;
+    width: 100%;
+    padding: 0 20px;
+    color: #ffffff;
+    font-size: 1.2em;
+    text-decoration: none;
+}
+
+.side-nav ul li a .fa-chevron-right {
+    display: flex;
+    width: 100%;
+    justify-content: flex-end;
+    font-size: .5em !important;
+}
+
+.subnav li {
+    border-bottom: none !important;
+}
+
+.subnav ul li:nth-child(1) {
+    border-top: none !important;
+}
+
+.subnav li a {
+    font-size: 1em !important;
+    padding-left: 35px !important;
+}
+
+/****sidenav****/
+
+/****main****/
+
+.main {
+    margin-left: 250px;
+    margin-top: 80px;
+}
+
+/****main****/
+
+/****create table nav*****/
+
+.main-sub-nav {
+    position: fixed;
+    top: 80px;
+    left: 0;
+    z-index: 1001;
+    width: 100%;
+    height: 56px;
+    padding-left: 250px;
+    background: #e6e8ea;
+    border-top: 1px solid #d4d7db;
+    border-bottom: 1px solid rgba(0, 0, 0, .20);
+}
+
+/****create table nav*****/
+
+/****subnav-spacer*****/
+
+.subnav-spacer {
+    height: 56px;
+    width: 100%;
+}
+
+/****subnav-spacer*****/

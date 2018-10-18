@@ -1,0 +1,28 @@
+
+<div class="main-sub-nav d-flex align-items-center justify-content-end">
+    <span class="pl-3 mr-auto">{{ routeLabel }}</span> 
+    <a class="btn btn-success mr-5" href="#!create_table">Create Table</a>
+    </div>
+    <div class="subnav-spacer"></div>
+    <table class="table text-center mt-3">
+        <thead>
+            <tr>
+            <th scope="col">id</th>
+            <th scope="col">Name</th>
+            <th scope="col">Records</th>
+            <th scope="col">Fields</th>
+            <th scope="col">Edit</th>
+            <th scope="col">View</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="table in tables track by $index">
+            <td>{{ table.id }}</td>
+            <td>{{ table.name }}</td>
+            <td>{{ table.records.length }}</td>
+            <td>{{ table.fields }}</td>
+            <td><a href="#!editTable?id={{ table.id }}&amp;table_name={{ table.name }}"><i class="fa fa-pencil"></i></a></td>
+            <td><a href="#!viewRecords?id={{ table.id }}&amp;table_name={{ table.name }}" class="btn btn-outline-primary">Go</a></td>
+            </tr>
+        </tbody>
+        </table>
