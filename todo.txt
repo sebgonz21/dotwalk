@@ -1,4 +1,0 @@
-Add query functionality
-
-add create index
-

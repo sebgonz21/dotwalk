@@ -1,0 +1,49 @@
+<div class="main-sub-nav d-flex align-items-center justify-content-end">
+    <span class="pl-3 mr-auto">{{ routeLabel }}</span> 
+<button type="button" class="btn btn-info mr-3" ng-click="addfield()">Add a Field</button>
+<button type="button" class="btn btn-success mr-5" ng-click="saveTable()" ng-disabled="saveTableDisabled">Save Table</button>
+
+</div>
+<div class="subnav-spacer"></div>
+<div class="container mt-3">
+<!--<nav aria-label="breadcrumb">
+<ol class="breadcrumb">
+<li ng-repeat="crumb in crumbs track by $index" class="breadcrumb-item" aria-current="page">
+<a class="breadcrumb-item" ng-class="{active:$index != 0}" href='#!{{ crumb.loc }}'>{{ crumb.label }}</a>
+</li>
+</ol>
+</nav>-->
+<div class="col-md-6 offset-md-3">
+<h2 class="text-center">Create Table</h2>
+<form>
+<div class="form-group">
+<label for="table-name">Table Name:</label>
+<input type="text" class="form-control" id="table-name">
+<p class="text-primary" ng-show="!inputs.length">Note: At least one field must be added before a table can be saved.</p>
+</div>
+<div class="form-group">
+        <div class="mt-5" ng-repeat="item in inputs track by $index" id="field-{{ ::$index }}" scroll-to-last="field-{{ ::$index }}">
+                <h4>Field {{$index + 1}}</h4>
+                <div class="form-group">
+                    <label for="fieldType{{ $index }}">Field Type</label>
+                    <select class="form-control" id="fieldType{{ $index }}" ng-init="item.selectedType = fieldTypes[0]" ng-model="item.selectedType" ng-options="x for x in fieldTypes">
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="fieldLabel{{ $index }}">Label</label>
+                    <input class="form-control" id="fieldLabel{{ $index }}" type="text" ng-model="item.fieldLabel" \>
+                </div>
+                <div class="form-group">
+                    <label for="requiredField{{ $index }}">Required</label>
+                    <input class="form-control" id="requiredField{{ $index }}" type="checkbox" ng-model="item.requiredField" \>
+                </div>
+                <!--<button class="btn btn-info" ng-click="saveField(item,$index)">Save Field</button>-->
+                <button type="button" class="btn btn-outline-danger" ng-click="removeField(item,$index)">Remove</button>
+                <hr/>
+            </div>
+
+</div>
+</div>
+</form>
+</div>
+</div>
