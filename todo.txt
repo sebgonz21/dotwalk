@@ -2,3 +2,8 @@ Add query functionality
 
 add create index
 
+add API call definition to ReadMe
+
+add _id to get all tables definition
+
+show updated created created by updated by on record

@@ -9,11 +9,14 @@ const bodyParser = require('body-parser');
 const startup = require('../startup/startup.js');
 const tableRoutes = require('./routes/tables.js');
 const dataRoutes = require('./routes/data.js');
+const interface = require('../UI.js');
 
 /** MIDDLEWARE */
 app.use(bodyParser.json());
 /**LOGGING MIDDLEWARE */
 app.use(morgan('dev'));
+
+app.use(interface);
 
 /** Start Schemas loader */
 startup.start();
@@ -30,6 +33,9 @@ app.use((req, res, next)=> {
     
     next();
 });
+
+
+
 
 
 app.get('/api',(req,res)=>{
